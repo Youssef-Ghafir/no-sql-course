@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoSQL Exam Essentials</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+
+        /* Study Mode Blur Effect */
+        .study-blur {
+            filter: blur(5px);
+            cursor: pointer;
+            transition: filter 0.3s ease;
+            user-select: none;
+            background-color: #374151;
+            color: transparent;
+            border-radius: 4px;
+        }
+        .study-blur:hover, .study-blur.revealed {
+            filter: blur(0);
+            background-color: transparent;
+            color: inherit;
+        }
+
+        /* Code Block Styling */
+        .code-block {
+            position: relative;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full bg-gray-900/90 backdrop-blur-md border-b border-gray-800 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="database" class="text-blue-400"></i>
+                    <span class="font-bold text-xl tracking-tight">NoSQL<span class="text-blue-400">Mastery</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#concepts" class="text-sm font-medium hover:text-blue-400 transition">Concepts</a>
+                    <a href="#crud" class="text-sm font-medium hover:text-blue-400 transition">CRUD</a>
+                    <a href="#operators" class="text-sm font-medium hover:text-blue-400 transition">Operators</a>
+                    <a href="#aggregation" class="text-sm font-medium hover:text-blue-400 transition">Aggregation</a>
+                    <a href="#indexing" class="text-sm font-medium hover:text-blue-400 transition">Indexing</a>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Study Mode</span>
+                    <button id="studyToggle" class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900" role="switch" aria-checked="false">
+                        <span id="toggleKnob" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
+            Ace Your <span class="text-gradient">NoSQL Exam</span>
+        </h1>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+            A comprehensive, interactive cheat sheet for Document-Oriented Databases. Toggle <strong>Study Mode</strong> to quiz yourself on key definitions.
+        </p>
+        <div class="flex justify-center space-x-4">
+            <a href="#crud" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center">
+                <i data-lucide="code" class="w-5 h-5 mr-2"></i> Cheat Sheet
+            </a>
+            <a href="#aggregation" class="bg-gray-800 hover:bg-gray-700 text-gray-200 px-6 py-3 rounded-lg font-semibold transition flex items-center">
+                <i data-lucide="layers" class="w-5 h-5 mr-2"></i> Pipelines
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-24">
+
+        <!-- Core Concepts Section -->
+        <section id="concepts" class="scroll-mt-24">
+            <div class="flex items-center mb-8">
+                <div class="p-2 bg-blue-900/30 rounded-lg mr-4">
+                    <i data-lucide="book-open" class="w-6 h-6 text-blue-400"></i>
+                </div>
+                <h2 class="text-3xl font-bold">Core Concepts</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Structure Card -->
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-300">Data Hierarchy</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="bg-blue-900/50 p-1 rounded mr-3 mt-1"><i data-lucide="database" class="w-4 h-4 text-blue-400"></i></span>
+                            <div>
+                                <span class="font-bold text-gray-200">Database</span>
+                                <p class="text-gray-400 text-sm mt-1 study-target">Container for collections. Equivalent to SQL Database.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-blue-900/50 p-1 rounded mr-3 mt-1"><i data-lucide="folder" class="w-4 h-4 text-blue-400"></i></span>
+                            <div>
+                                <span class="font-bold text-gray-200">Collection</span>
+                                <p class="text-gray-400 text-sm mt-1 study-target">Group of documents. Equivalent to SQL Table.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-blue-900/50 p-1 rounded mr-3 mt-1"><i data-lucide="file-text" class="w-4 h-4 text-blue-400"></i></span>
+                            <div>
+                                <span class="font-bold text-gray-200">Document</span>
+                                <p class="text-gray-400 text-sm mt-1 study-target">Data record (BSON). Equivalent to SQL Row.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- JSON vs BSON Card -->
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-green-300">JSON vs. BSON</h3>
+                    <div class="space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-mono text-yellow-400 font-bold">JSON</span>
+                                <span class="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300">Human Friendly</span>
+                            </div>
+                            <p class="text-sm text-gray-400 study-target">Text-based, lightweight, used for data exchange over the web.</p>
+                        </div>
+                        <div class="bg-gray-900/50 p-4 rounded-lg border border-green-900/30">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-mono text-green-400 font-bold">BSON</span>
+                                <span class="text-xs bg-green-900/30 px-2 py-1 rounded text-green-300">Machine Efficient</span>
+                            </div>
+                            <p class="text-sm text-gray-400 study-target">Binary JSON. Used internally by MongoDB. Faster scanning, supports Dates & Binary data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CRUD Operations Interactive Tab -->
+        <section id="crud" class="scroll-mt-24">
+            <div class="flex items-center mb-8">
+                <div class="p-2 bg-purple-900/30 rounded-lg mr-4">
+                    <i data-lucide="terminal" class="w-6 h-6 text-purple-400"></i>
+                </div>
+                <h2 class="text-3xl font-bold">CRUD Commands</h2>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-2xl">
+                <!-- Tab Headers -->
+                <div class="flex border-b border-gray-700 overflow-x-auto">
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-blue-400 border-b-2 border-blue-400 focus:outline-none bg-gray-900/50" onclick="switchTab('create')">Create (Insert)</button>
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-gray-400 hover:text-gray-200 focus:outline-none" onclick="switchTab('read')">Read (Find)</button>
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-gray-400 hover:text-gray-200 focus:outline-none" onclick="switchTab('update')">Update</button>
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-gray-400 hover:text-gray-200 focus:outline-none" onclick="switchTab('delete')">Delete</button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="p-6 md:p-8 bg-gray-900/50 min-h-[300px]">
+                    
+                    <!-- CREATE -->
+                    <div id="create" class="tab-content block">
+                        <h3 class="text-lg font-semibold text-white mb-4">Inserting Documents</h3>
+                        <div class="grid gap-6">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Insert a single document:</p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-green-400">db.users.insertOne({ name: "Ali", age: 20, city: "Paris" })</code>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Insert multiple documents (Array):</p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm block text-blue-300">db.users.insertMany([</code>
+                                    <code class="font-mono text-sm block pl-4 text-green-400">{ name: "Sara", age: 22 },</code>
+                                    <code class="font-mono text-sm block pl-4 text-green-400">{ name: "Omar", age: 25 }</code>
+                                    <code class="font-mono text-sm block text-blue-300">])</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- READ -->
+                    <div id="read" class="tab-content hidden">
+                        <h3 class="text-lg font-semibold text-white mb-4">Finding Data</h3>
+                        <div class="grid gap-6">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-2">Find All:</p>
+                                    <div class="code-block p-4">
+                                        <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                        <code class="font-mono text-sm text-yellow-300">db.users.find()</code>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-2">Find One (First match):</p>
+                                    <div class="code-block p-4">
+                                        <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                        <code class="font-mono text-sm text-yellow-300">db.users.findOne({ age: 20 })</code>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Projections -->
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2 flex items-center">
+                                    <span class="bg-gray-700 px-2 py-0.5 rounded text-xs mr-2">Projection</span> 
+                                    Select specific fields (0 = hide, 1 = show)
+                                </p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-gray-400">// Show name, hide _id</code><br>
+                                    <code class="font-mono text-sm text-yellow-300">db.users.find({}, { name: 1, _id: 0 })</code>
+                                </div>
+                            </div>
+
+                            <!-- Sorting & Limit -->
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2 flex items-center">
+                                    <span class="bg-blue-900/50 text-blue-300 px-2 py-0.5 rounded text-xs mr-2">Cursors</span> 
+                                    Sorting, Limits & Skipping
+                                </p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-gray-400">// Sort by age DESC (-1), skip first 5, take next 10</code><br>
+                                    <code class="font-mono text-sm text-yellow-300">db.users.find().sort({ age: -1 }).skip(5).limit(10)</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPDATE -->
+                    <div id="update" class="tab-content hidden">
+                        <h3 class="text-lg font-semibold text-white mb-4">Updating Documents</h3>
+                        <div class="space-y-6">
+                            
+                            <!-- Basic Updates -->
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Update Operators ($set, $inc, $unset):</p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-purple-400">db.users.updateOne(</code>
+                                    <div class="pl-4">
+                                        <code class="font-mono text-sm text-gray-300">{ name: "Ali" }, </code><span class="text-gray-500 text-xs">// Filter</span><br>
+                                        <code class="font-mono text-sm text-blue-300">{ </code><br>
+                                        <code class="font-mono text-sm text-green-400 pl-4">$set: { city: "Lyon" },</code> <span class="text-gray-500 text-xs">// Change value</span><br>
+                                        <code class="font-mono text-sm text-green-400 pl-4">$inc: { age: 1 },</code> <span class="text-gray-500 text-xs">// Increment number</span><br>
+                                        <code class="font-mono text-sm text-red-400 pl-4">$unset: { temp_field: "" }</code> <span class="text-gray-500 text-xs">// Remove field</span><br>
+                                        <code class="font-mono text-sm text-blue-300">}</code>
+                                    </div>
+                                    <code class="font-mono text-sm text-purple-400">)</code>
+                                </div>
+                            </div>
+
+                            <!-- Array Updates -->
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Array Modifications ($push, $pull):</p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-purple-400">db.users.updateOne(</code>
+                                    <div class="pl-4">
+                                        <code class="font-mono text-sm text-gray-300">{ name: "Ali" }, </code><br>
+                                        <code class="font-mono text-sm text-blue-300">{ </code><br>
+                                        <code class="font-mono text-sm text-green-400 pl-4">$push: { hobbies: "Tennis" },</code> <span class="text-gray-500 text-xs">// Add to list</span><br>
+                                        <code class="font-mono text-sm text-red-400 pl-4">$pull: { hobbies: "Golf" }</code> <span class="text-gray-500 text-xs">// Remove specific item</span><br>
+                                        <code class="font-mono text-sm text-blue-300">}</code>
+                                    </div>
+                                    <code class="font-mono text-sm text-purple-400">)</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-yellow-900/20 border border-yellow-700/50 p-4 rounded-lg">
+                                <h4 class="text-yellow-400 text-sm font-bold mb-1 flex items-center"><i data-lucide="alert-triangle" class="w-4 h-4 mr-2"></i> Caution</h4>
+                                <p class="text-xs text-gray-300">Always use update operators like <span class="font-mono text-red-400">$set</span>. If you pass a document without an operator, it might replace the entire document content!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DELETE -->
+                    <div id="delete" class="tab-content hidden">
+                        <h3 class="text-lg font-semibold text-white mb-4">Deleting Documents</h3>
+                        <div class="grid gap-6">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Delete specific document:</p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-red-400">db.users.deleteOne({ _id: ObjectId("...") })</code>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Delete multiple (based on condition):</p>
+                                <div class="code-block p-4">
+                                    <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-xs text-white px-2 py-1 rounded">Copy</button>
+                                    <code class="font-mono text-sm text-red-400">db.users.deleteMany({ age: { $lt: 18 } })</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Operators & Advanced Section -->
+        <section id="operators" class="grid md:grid-cols-3 gap-8 scroll-mt-24">
+            
+            <!-- Comparison Operators -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="filter" class="w-5 h-5 text-pink-400 mr-2"></i>
+                    <h3 class="font-bold text-lg">Comparison</h3>
+                </div>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex justify-between border-b border-gray-700 pb-2">
+                        <code class="text-pink-400 font-mono">$eq / $ne</code>
+                        <span class="text-gray-400 study-target">Equal / Not Equal</span>
+                    </li>
+                    <li class="flex justify-between border-b border-gray-700 pb-2">
+                        <code class="text-pink-400 font-mono">$gt / $gte</code>
+                        <span class="text-gray-400 study-target">Greater / >=</span>
+                    </li>
+                    <li class="flex justify-between border-b border-gray-700 pb-2">
+                        <code class="text-pink-400 font-mono">$lt / $lte</code>
+                        <span class="text-gray-400 study-target">Less / <=</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <code class="text-pink-400 font-mono">$in</code>
+                        <span class="text-gray-400 study-target">Value in list [a,b]</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Logical & Element -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="git-merge" class="w-5 h-5 text-indigo-400 mr-2"></i>
+                    <h3 class="font-bold text-lg">Logical</h3>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between border-b border-gray-700 pb-2">
+                        <code class="text-indigo-400 font-mono">$and / $or</code>
+                        <span class="text-gray-400 study-target">Combine conditions</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-700 pb-2">
+                        <code class="text-indigo-400 font-mono">$exists</code>
+                        <span class="text-gray-400 study-target">Check field presence</span>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xs text-gray-500 mb-1">Regex Example:</p>
+                        <code class="block bg-gray-900 p-2 rounded text-xs text-indigo-300">
+                            { name: { $regex: "^Ali", $options: "i" } }
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Array Magic -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 bg-red-500/10 w-24 h-24 rounded-full blur-2xl"></div>
+                <div class="flex items-center mb-4 relative z-10">
+                    <i data-lucide="list" class="w-5 h-5 text-red-400 mr-2"></i>
+                    <h3 class="font-bold text-lg text-red-100">Arrays (Hard!)</h3>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="bg-gray-900 rounded p-3 border border-red-900/30">
+                        <code class="text-red-400 font-mono text-sm block mb-1">$elemMatch</code>
+                        <p class="text-xs text-gray-400 mb-2 study-target">Matches array item satisfying ALL inner criteria.</p>
+                        <code class="text-xs text-gray-500 block border-t border-gray-800 pt-2">
+                            { orders: { $elemMatch: { price: 100, item: "book" } } }
+                        </code>
+                    </div>
+                    
+                    <div class="flex justify-between border-b border-gray-700 pb-2 text-sm">
+                        <code class="text-red-400 font-mono">$size</code>
+                        <span class="text-gray-400 study-target text-right">Array has X items</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <code class="text-red-400 font-mono">$all</code>
+                        <span class="text-gray-400 study-target text-right">Has all values [a,b]</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Aggregation Pipeline Visualizer -->
+        <section id="aggregation" class="scroll-mt-24">
+            <div class="flex items-center mb-8">
+                <div class="p-2 bg-orange-900/30 rounded-lg mr-4">
+                    <i data-lucide="layers" class="w-6 h-6 text-orange-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold">Aggregation Pipeline</h2>
+                    <p class="text-gray-400 text-sm">Think of it as a conveyor belt: Data enters, gets processed stage by stage.</p>
+                </div>
+            </div>
+
+            <!-- Pipeline Steps -->
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-8 top-0 bottom-0 w-1 bg-gray-700 z-0"></div>
+
+                <!-- Stage 1 -->
+                <div class="relative z-10 flex items-start mb-8 group">
+                    <div class="flex-shrink-0 w-16 h-16 bg-gray-800 border-2 border-orange-500 rounded-full flex items-center justify-center font-bold text-xl text-orange-400 shadow-lg group-hover:scale-110 transition">1</div>
+                    <div class="ml-6 bg-gray-800 p-5 rounded-lg border border-gray-700 flex-1 hover:border-orange-500/50 transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-orange-300 font-mono">$match</h4>
+                            <span class="text-xs bg-gray-700 px-2 py-1 rounded">Filter</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2 study-target">Filters the documents to pass only the documents that match the specified condition(s) to the next pipeline stage.</p>
+                        <code class="text-xs text-gray-500 font-mono">{ status: "A" }</code>
+                    </div>
+                </div>
+
+                <!-- Stage 2 -->
+                <div class="relative z-10 flex items-start mb-8 group">
+                    <div class="flex-shrink-0 w-16 h-16 bg-gray-800 border-2 border-orange-500 rounded-full flex items-center justify-center font-bold text-xl text-orange-400 shadow-lg group-hover:scale-110 transition">2</div>
+                    <div class="ml-6 bg-gray-800 p-5 rounded-lg border border-gray-700 flex-1 hover:border-orange-500/50 transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-orange-300 font-mono">$unwind</h4>
+                            <span class="text-xs bg-gray-700 px-2 py-1 rounded">Deconstruct</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2 study-target">Deconstructs an array field from the input documents to output a document for each element.</p>
+                        <code class="text-xs text-gray-500 font-mono">$unwind: "$items"</code>
+                    </div>
+                </div>
+
+                <!-- Stage 3 -->
+                <div class="relative z-10 flex items-start mb-8 group">
+                    <div class="flex-shrink-0 w-16 h-16 bg-gray-800 border-2 border-orange-500 rounded-full flex items-center justify-center font-bold text-xl text-orange-400 shadow-lg group-hover:scale-110 transition">3</div>
+                    <div class="ml-6 bg-gray-800 p-5 rounded-lg border border-gray-700 flex-1 hover:border-orange-500/50 transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-orange-300 font-mono">$group</h4>
+                            <span class="text-xs bg-gray-700 px-2 py-1 rounded">Aggregate</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2 study-target">Groups input documents by the specified _id expression and applies the accumulator expressions.</p>
+                        <code class="text-xs text-gray-500 font-mono">{ _id: "$custId", total: { $sum: "$amount" } }</code>
+                    </div>
+                </div>
+
+                <!-- Stage 4 -->
+                <div class="relative z-10 flex items-start mb-8 group">
+                    <div class="flex-shrink-0 w-16 h-16 bg-gray-800 border-2 border-orange-500 rounded-full flex items-center justify-center font-bold text-xl text-orange-400 shadow-lg group-hover:scale-110 transition">4</div>
+                    <div class="ml-6 bg-gray-800 p-5 rounded-lg border border-gray-700 flex-1 hover:border-orange-500/50 transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-orange-300 font-mono">$project</h4>
+                            <span class="text-xs bg-gray-700 px-2 py-1 rounded">Shape</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2 study-target">Passes along the documents with the requested fields to the next stage.</p>
+                        <code class="text-xs text-gray-500 font-mono">{ total: 1, _id: 0 }</code>
+                    </div>
+                </div>
+
+                <!-- Stage 5: Lookup (JOIN) -->
+                <div class="relative z-10 flex items-start group">
+                    <div class="flex-shrink-0 w-16 h-16 bg-gray-800 border-2 border-orange-500 rounded-full flex items-center justify-center font-bold text-xl text-orange-400 shadow-lg group-hover:scale-110 transition">5</div>
+                    <div class="ml-6 bg-gray-800 p-5 rounded-lg border border-gray-700 flex-1 hover:border-orange-500/50 transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-orange-300 font-mono">$lookup</h4>
+                            <span class="text-xs bg-purple-900/50 text-purple-300 px-2 py-1 rounded border border-purple-800">Left Outer Join</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2 study-target">Performs a join with another collection.</p>
+                        <div class="code-block p-3">
+                            <code class="text-xs text-gray-500 font-mono block">
+                                { <br>
+                                &nbsp;&nbsp;from: "inventory",<br>
+                                &nbsp;&nbsp;localField: "item",<br>
+                                &nbsp;&nbsp;foreignField: "sku",<br>
+                                &nbsp;&nbsp;as: "inventory_docs"<br>
+                                }
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Indexing & Performance Section -->
+        <section id="indexing" class="scroll-mt-24">
+            <div class="flex items-center mb-8">
+                <div class="p-2 bg-emerald-900/30 rounded-lg mr-4">
+                    <i data-lucide="zap" class="w-6 h-6 text-emerald-400"></i>
+                </div>
+                <h2 class="text-3xl font-bold">Performance & Indexing</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h3 class="text-xl font-bold mb-4 text-emerald-400">Why Index?</h3>
+                    <p class="text-gray-400 text-sm mb-4 study-target">Without indexes, MongoDB must perform a <strong>collection scan</strong> (scan every document). Indexes store a small portion of data in an easy-to-traverse form.</p>
+                    
+                    <div class="code-block p-4 mb-4">
+                        <p class="text-xs text-gray-500 mb-1">Create an index (1=Asc, -1=Desc):</p>
+                        <code class="font-mono text-sm text-emerald-300">db.users.createIndex({ name: 1 })</code>
+                    </div>
+                    <div class="code-block p-4">
+                        <p class="text-xs text-gray-500 mb-1">Compound Index:</p>
+                        <code class="font-mono text-sm text-emerald-300">db.users.createIndex({ name: 1, age: -1 })</code>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h3 class="text-xl font-bold mb-4 text-emerald-400">Analyzing Performance</h3>
+                    <p class="text-gray-400 text-sm mb-4 study-target">Use <code class="text-emerald-300">explain()</code> to check if your query is using an index or doing a full scan.</p>
+                    
+                    <div class="code-block p-4 mb-4">
+                        <code class="font-mono text-sm text-yellow-300">db.users.find({ name: "Ali" }).explain("executionStats")</code>
+                    </div>
+                    
+                    <ul class="text-xs space-y-2 text-gray-400">
+                        <li class="flex items-center"><i data-lucide="check-circle" class="w-4 h-4 text-green-500 mr-2"></i> <strong>IXSCAN:</strong> Good! Used an index.</li>
+                        <li class="flex items-center"><i data-lucide="x-circle" class="w-4 h-4 text-red-500 mr-2"></i> <strong>COLLSCAN:</strong> Bad! Scanned entire collection.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('block');
+            });
+            // Show selected content
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('block');
+
+            // Reset Tab Styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400', 'bg-gray-900/50');
+                btn.classList.add('text-gray-400');
+            });
+
+            // Set Active Tab Style
+            const activeBtn = event.target;
+            activeBtn.classList.remove('text-gray-400');
+            activeBtn.classList.add('text-blue-400', 'border-b-2', 'border-blue-400', 'bg-gray-900/50');
+        }
+
+        // Copy to Clipboard Logic
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const code = btn.nextElementSibling.innerText;
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                // Visual Feedback
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                btn.classList.add('bg-green-600', 'text-white');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('bg-green-600', 'text-white');
+                }, 2000);
+            });
+        });
+
+        // Study Mode Toggle
+        const studyToggle = document.getElementById('studyToggle');
+        const toggleKnob = document.getElementById('toggleKnob');
+        const targets = document.querySelectorAll('.study-target');
+        let studyMode = false;
+
+        studyToggle.addEventListener('click', () => {
+            studyMode = !studyMode;
+            
+            // Toggle Switch Visuals
+            if (studyMode) {
+                studyToggle.classList.replace('bg-gray-700', 'bg-blue-600');
+                toggleKnob.classList.replace('translate-x-1', 'translate-x-6');
+                
+                // Apply Blur
+                targets.forEach(el => {
+                    el.classList.add('study-blur');
+                    el.classList.remove('revealed');
+                    el.addEventListener('click', revealAnswer);
+                });
+            } else {
+                studyToggle.classList.replace('bg-blue-600', 'bg-gray-700');
+                toggleKnob.classList.replace('translate-x-6', 'translate-x-1');
+                
+                // Remove Blur
+                targets.forEach(el => {
+                    el.classList.remove('study-blur', 'revealed');
+                    el.removeEventListener('click', revealAnswer);
+                });
+            }
+        });
+
+        function revealAnswer(e) {
+            if (studyMode) {
+                e.target.classList.add('revealed');
+            }
+        }
+    </script>
+</body>
+</html>
